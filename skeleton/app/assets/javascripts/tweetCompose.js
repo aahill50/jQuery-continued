@@ -5,6 +5,12 @@ $.TweetCompose = function (el) {
     event.preventDefault();
     this.submit(event.currentTarget);
   }.bind(this))
+
+  this.$el.on("input", "textarea", function (event) {
+    var charCount = 140 - $(this).val().length;
+    var $chars = $('.chars-left')
+    $chars.text(charCount + " characters left");
+  })
 };
 
 $.TweetCompose.prototype.submit = function (target) {
@@ -18,27 +24,20 @@ $.TweetCompose.prototype.submit = function (target) {
     type: "post",
     data: formData,
     dataType: "json",
-    success: function(data) {
-      console.log("data", data);
-
-      this.clearInput();
-      $inputs.prop("disabled", false);
-    }.bind(this)
+    success: this.handleSuccess($inputs)
   })
-
 };
 
 $.TweetCompose.prototype.clearInput = function () {
-  // var $inputs = this.$el.find(":input").not("button");
-  // console.log($inputs);
-  // $inputs.val("");
   this.$el.each( function () {
     this.reset();
   });
-  // reset is function on native DOM element
-  // look for form reset method
 };
 
+$.TweetCompose.prototype.handleSuccess = function (input) {
+  this.clearInput();
+  input.prop("disabled", false);
+};
 
 $.fn.tweetCompose = function () {
   return this.each(function () {
